@@ -1,0 +1,142 @@
+[
+  {
+    "model": "myapp.AccountBrand",
+    "pk": 1,
+    "fields": {
+      "login_id": "petbrand01",
+      "login_password": "securepass1",
+      "name": "HappyPaws",
+      "email": "contact@happypaws.com",
+      "phone_number": "010-1234-5678",
+      "brand_pet_focus": "강아지 용품 전문 브랜드"
+    }
+  },
+  {
+    "model": "myapp.AccountBrand",
+    "pk": 2,
+    "fields": {
+      "login_id": "meowbrand01",
+      "login_password": "securepass2",
+      "name": "MeowLife",
+      "email": "support@meowlife.com",
+      "phone_number": "010-9876-5432",
+      "brand_pet_focus": "고양이 간식 및 장난감"
+    }
+  },
+
+  {
+    "model": "myapp.AccountCreator",
+    "pk": 1,
+    "fields": {
+      "login_id": "creatordog01",
+      "login_password": "creatorpass1",
+      "name": "멍스타그램",
+      "email": "dogcreator@example.com",
+      "phone_number": "010-3333-4444",
+      "address": "서울시 강남구 반려동물로 123",
+      "pet_type": "강아지 (포메라니안)",
+      "sns_handle": "@dog_stargram",
+      "sns_url": "https://instagram.com/dog_stargram",
+      "total_post_count": 320,
+      "follower_count": 15800
+    }
+  },
+  {
+    "model": "myapp.AccountCreator",
+    "pk": 2,
+    "fields": {
+      "login_id": "creatorcat02",
+      "login_password": "creatorpass2",
+      "name": "고양이집사",
+      "email": "catcreator@example.com",
+      "phone_number": "010-5555-6666",
+      "address": "부산광역시 해운대구 고양이길 45",
+      "pet_type": "고양이 (러시안블루)",
+      "sns_handle": "@cat_butler",
+      "sns_url": "https://instagram.com/cat_butler",
+      "total_post_count": 210,
+      "follower_count": 9200
+    }
+  },
+
+  {
+    "model": "myapp.Campaign",
+    "pk": 1,
+    "fields": {
+      "brand_id": 1,
+      "product_name": "고급 강아지 간식 세트",
+      "product_type": "간식",
+      "product_image_url": "https://example.com/dog-treat.jpg",
+      "product_description": "국내산 원료로 만든 프리미엄 강아지 간식",
+      "target_pet_type": "강아지",
+      "min_follower_count": 10000,
+      "requested_at": "2025-11-01T10:00:00",
+      "application_deadline_at": "2025-11-20",
+      "posting_start_at": "2025-11-25",
+      "posting_end_at": "2025-12-05",
+      "required_creator_count": 3
+    }
+  },
+  {
+    "model": "myapp.Campaign",
+    "pk": 2,
+    "fields": {
+      "brand_id": 2,
+      "product_name": "고양이 캣닢 장난감",
+      "product_type": "장난감",
+      "product_image_url": "https://example.com/cat-toy.jpg",
+      "product_description": "천연 캣닢이 들어간 고양이 스트레스 해소 장난감",
+      "target_pet_type": "고양이",
+      "min_follower_count": 5000,
+      "requested_at": "2025-11-05T14:30:00",
+      "application_deadline_at": "2025-11-28",
+      "posting_start_at": "2025-12-01",
+      "posting_end_at": "2025-12-10",
+      "required_creator_count": 2
+    }
+  },
+
+  {
+    "model": "myapp.CampaignAcceptance",
+    "pk": 1,
+    "fields": {
+      "creator_id": 1,
+      "campaign_id": 1,
+      "acceptance_status": "selected",
+      "applied_at": "2025-11-03T11:20:00",
+      "selected_at": "2025-11-10T09:00:00"
+    }
+  },
+  {
+    "model": "myapp.CampaignAcceptance",
+    "pk": 2,
+    "fields": {
+      "creator_id": 2,
+      "campaign_id": 2,
+      "acceptance_status": "selected",
+      "applied_at": "2025-11-07T16:00:00",
+      "selected_at": "2025-11-12T15:30:00"
+    }
+  },
+
+  {
+    "model": "myapp.Deliverable",
+    "pk": 1,
+    "fields": {
+      "campaign_acceptance_id": 1,
+      "posted_at": "2025-11-26T18:00:00",
+      "post_url": "https://instagram.com/p/POST001/",
+      "deliverable_status": "approved"
+    }
+  },
+  {
+    "model": "myapp.Deliverable",
+    "pk": 2,
+    "fields": {
+      "campaign_acceptance_id": 2,
+      "posted_at": "2025-12-02T12:00:00",
+      "post_url": "https://instagram.com/p/POST002/",
+      "deliverable_status": "pending"
+    }
+  }
+]

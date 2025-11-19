@@ -1,0 +1,54 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pawfecto</title>
+    {% block style %}
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'myapp/style.css' %}" />
+
+    <!-- Google Fonts -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Rubik+Bubbles&display=swap"
+    />
+    {% endblock style %}
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="logo-wrapper">
+        <img src="{% static 'images/Pawfecto_logo.png' %}" class="logo-img" />
+        <div class="pawfecto-header-logo">Pawfecto</div>
+      </div>
+
+      <nav class="nav">
+        <a class="nav-item">Brand</a>
+        <a class="nav-item">Creator</a>
+        <a class="nav-item">Dashboard</a>
+      </nav>
+    </header>
+
+    {% block content %} {% endblock content %}
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer-line"></div>
+
+      <div class="footer-logo">Pawfecto</div>
+      <div class="footer-address">address</div>
+
+      <div class="footer-links-title">Links</div>
+      <div class="footer-link">Home</div>
+      <div class="footer-link">Brand</div>
+      <div class="footer-link">Creator</div>
+      <div class="footer-link">Campaign</div>
+      <div class="footer-link">Dashboard</div>
+
+      <div class="footer-copy">2025 Pawfecto. All rights reserved.</div>
+    </footer>
+  </body>
+</html>

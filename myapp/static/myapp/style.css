@@ -1,0 +1,302 @@
+/* Home */
+.home {
+  position: absolute;
+  left: 44.31%;
+  right: 52.36%;
+  top: 19.78%;
+  bottom: 71.58%;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #000000;
+}
+
+/* Brand */
+.brand {
+  position: absolute;
+  left: 44.31%;
+  right: 52.29%;
+  top: 35.61%;
+  bottom: 55.76%;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #000000;
+}
+
+/* Creator */
+.creator {
+  position: absolute;
+  left: 44.31%;
+  right: 51.39%;
+  top: 51.44%;
+  bottom: 39.93%;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #000000;
+}
+
+/* Campaign */
+.campaign {
+  position: absolute;
+  left: 44.31%;
+  right: 49.65%;
+  top: 67.27%;
+  bottom: 24.1%;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #000000;
+}
+
+/* Dashboard */
+.dashboard {
+  position: absolute;
+  left: 44.31%;
+  right: 49.44%;
+  top: 83.09%;
+  bottom: 8.27%;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #000000;
+}
+
+/* Links */
+.links {
+  position: absolute;
+  left: 36.94%;
+  right: 60.42%;
+  top: 19.78%;
+  bottom: 71.58%;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #9f9f9f;
+}
+
+/* Line 4 */
+.line4 {
+  position: absolute;
+  width: 1440px;
+  left: calc(50% - 1440px / 2);
+  top: 0%;
+  bottom: 100%;
+  border: 1px solid #d9d9d9;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 10px;
+  position: absolute;
+  width: 1440px;
+  height: 278px;
+  left: calc(50% - 1440px / 2);
+  bottom: 30px;
+}
+
+/* Footer Logo */
+.footer-logo {
+  font-family: "Rubik Bubbles";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 50px;
+  line-height: 59px;
+  color: #000000;
+}
+
+/* Footer Text */
+.footer-text {
+  position: absolute;
+  left: 78.68%;
+  right: 2.71%;
+  top: 91.37%;
+  bottom: 0%;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: #9f9f9f;
+}
+
+/* Pawfecto Logo */
+.pawfecto-logo {
+  position: absolute;
+  left: 6.46%;
+  right: 75.9%;
+  top: 14.75%;
+  bottom: 64.03%;
+  font-family: "Rubik Bubbles";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 50px;
+  line-height: 59px;
+  color: #000000;
+}
+
+.pawfecto-header-logo {
+  left: 6.46%;
+  right: 75.9%;
+  top: 14.75%;
+  bottom: 64.03%;
+  font-family: "Rubik Bubbles";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 59px;
+  color: #000000;
+}
+
+/* CTA Button */
+.cta-btn {
+  position: absolute;
+  width: 176px;
+  height: 48px;
+  left: 100px;
+  top: 2147px;
+  background: #5d4b3e;
+  text-align: center;
+  font-family: "Poppins";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  color: #ffffff;
+  border-radius: 15px;
+}
+
+/* Category Grid */
+.category-grid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.category-card {
+  width: 240px;
+  height: 360px;
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-img {
+  width: 100%;
+  height: 70%;
+  background-size: cover;
+  background-position: center;
+}
+
+.img1 {
+  background-image: url("path_to_image_1.jpg");
+}
+
+.img2 {
+  background-image: url("path_to_image_2.jpg");
+}
+
+.img3 {
+  background-image: url("path_to_image_3.jpg");
+}
+
+.img4 {
+  background-image: url("path_to_image_4.jpg");
+}
+
+.category-label {
+  font-family: "Poppins";
+  font-weight: 600;
+  font-size: 16px;
+  color: #333333;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Section Titles */
+.categories-title,
+.insp-title {
+  font-family: "Poppins";
+  font-weight: 700;
+  font-size: 32px;
+  line-height: 48px;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.categories-subtitle,
+.insp-subtitle {
+  font-family: "Poppins";
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 30px;
+  color: #666666;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Header 전체를 인라인 블록 형태로 */
+.header {
+  display: inline-block;
+  width: 100%; /* 전체 너비를 차지하도록 설정 */
+  padding: 20px 0; /* 상하 패딩 추가 */
+}
+
+/* 로고와 텍스트가 수평으로 배치되도록 설정 */
+.logo-wrapper {
+  display: inline-block; /* 인라인 블록 */
+  vertical-align: middle; /* 세로 정렬 */
+  margin-right: 20px; /* 내비게이션 메뉴와 간격 조정 */
+}
+
+.pawfecto-header-logo {
+  font-family: "Rubik Bubbles";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 59px;
+  color: #000000;
+  margin-left: 10px; /* 로고와 텍스트 간의 간격 */
+}
+
+/* 내비게이션을 인라인 블록 형태로 설정 */
+.nav {
+  display: inline-block; /* 인라인 블록 */
+  vertical-align: middle; /* 세로 정렬 */
+}
+
+.nav-item {
+  display: inline-block; /* 메뉴 항목을 인라인 블록으로 설정 */
+  padding: 0 15px; /* 메뉴 항목 간의 간격 */
+  font-family: "Poppins";
+  font-size: 16px;
+  color: #000000;
+  text-decoration: none;
+}
+
+/* 헤더 안의 다른 요소들 */
+.header .nav {
+  text-align: right; /* 내비게이션을 오른쪽으로 정렬 */
+  float: right; /* 오른쪽 정렬 */
+}
