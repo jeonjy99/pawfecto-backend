@@ -23,6 +23,9 @@ class User(AbstractUser):
     sns_url = models.CharField(max_length=255, null=True, blank=True)
     total_post_count = models.IntegerField(null=True, blank=True)
     follower_count = models.IntegerField(null=True, blank=True)
+    
+    # 이미지 URL 필드 추가
+    profile_image_url = models.CharField(max_length=255, null=True, blank=True)
 
     # <Object: 8sdfx>
     # __str__ : 객체를 print할 때 커스터마이징
