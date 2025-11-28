@@ -70,6 +70,23 @@ class Campaign(models.Model):
     posting_start_at = models.DateField()
     posting_end_at = models.DateField()
     required_creator_count = models.IntegerField()
+    STYLE_TAG_CHOICES = [
+        ('outdoor', 'Outdoor'),
+        ('energetic', 'Energetic'),
+        ('no_preference', 'No Preference'),
+        ('minimal', 'Minimal'),
+        ('aesthetic', 'Aesthetic'),
+        ('heartfelt', 'Heartfelt'),
+        ('cozy', 'Cozy'),
+        ('wholesome', 'Wholesome'),
+        ('funny', 'Funny'),
+        ('calm', 'Calm'),
+    ]
+    style_tag = models.CharField(
+        max_length=20,  # 각 스타일 태그는 20자 이내
+        choices=STYLE_TAG_CHOICES,
+        default='no_preference'  # 기본값을 'no_preference'로 설정
+    )
 
     def __str__(self):
         return self.product_name

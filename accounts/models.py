@@ -1,7 +1,5 @@
 from django.db import models
 
-from django.db import models
-
 # Brand 모델
 class Brand(models.Model):
     brand_id = models.AutoField(primary_key=True)
@@ -34,6 +32,23 @@ class Creator(models.Model):
     follower_count = models.IntegerField(default=0)
     style_profile = models.TextField(null=True, blank=True)
     profile_image_url = models.CharField(max_length=255, null=True, blank=True)
+    STYLE_TAG_CHOICES = [
+        ('outdoor', 'Outdoor'),
+        ('energetic', 'Energetic'),
+        ('no_preference', 'No Preference'),
+        ('minimal', 'Minimal'),
+        ('aesthetic', 'Aesthetic'),
+        ('heartfelt', 'Heartfelt'),
+        ('cozy', 'Cozy'),
+        ('wholesome', 'Wholesome'),
+        ('funny', 'Funny'),
+        ('calm', 'Calm'),
+    ]
+    style_tag = models.CharField(
+        max_length=20,  # 각 스타일 태그는 20자 이내
+        choices=STYLE_TAG_CHOICES,
+        default='no_preference'  # 기본값을 'no_preference'로 설정
+    )
 
     def __str__(self):
         return self.name
