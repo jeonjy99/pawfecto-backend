@@ -1,37 +1,70 @@
 from django.db import models
 
-# Brand 모델
+from django.db import models
+
+
+# -----------------------------------------------------------
+# Brand 모델 (account_brand)
+# -----------------------------------------------------------
+
 class Brand(models.Model):
     brand_id = models.AutoField(primary_key=True)
+
     login_id = models.CharField(max_length=30, unique=True)
     login_password = models.CharField(max_length=255)
+
     name = models.CharField(max_length=50)
     email = models.CharField(max_length=50, unique=True)
+
     phone_number = models.CharField(max_length=20, null=True, blank=True)
-    pet_type = models.CharField(max_length=3, choices=[('dog', 'Dog'), ('cat', 'Cat')], null=True, blank=True)
-    style_profile = models.TextField(null=True, blank=True)
+
+    # ENUM('dog', 'cat') NULL
+    pet_type = models.CharField(
+        max_length=10,
+        choices=[('dog', 'Dog'), ('cat', 'Cat')],
+        null=True,
+        blank=True
+    )
+
     profile_image_url = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name
 
 
-# Creator 모델
+
+# -----------------------------------------------------------
+# Creator 모델 (account_creator)
+# -----------------------------------------------------------
+
 class Creator(models.Model):
     creator_id = models.AutoField(primary_key=True)
+
     login_id = models.CharField(max_length=30, unique=True)
     login_password = models.CharField(max_length=255)
+
     name = models.CharField(max_length=50)
     email = models.CharField(max_length=50, unique=True)
+
     phone_number = models.CharField(max_length=20, null=True, blank=True)
+
     address = models.CharField(max_length=255, null=True, blank=True)
-    pet_type = models.CharField(max_length=3, choices=[('dog', 'Dog'), ('cat', 'Cat')], null=True, blank=True)
+
+    # ENUM('dog', 'cat') NULL
+    pet_type = models.CharField(
+        max_length=10,
+        choices=[('dog', 'Dog'), ('cat', 'Cat')],
+        null=True,
+        blank=True
+    )
+
     sns_handle = models.CharField(max_length=50, null=True, blank=True)
     sns_url = models.CharField(max_length=255, null=True, blank=True)
+
     total_post_count = models.IntegerField(default=0)
     follower_count = models.IntegerField(default=0)
-    style_profile = models.TextField(null=True, blank=True)
-    profile_image_url = models.CharField(max_length=255, null=True, blank=True)
+
+    # ENUM('outdoor', 'energetic', ...)
     STYLE_TAG_CHOICES = [
         ('outdoor', 'Outdoor'),
         ('energetic', 'Energetic'),
@@ -44,14 +77,19 @@ class Creator(models.Model):
         ('funny', 'Funny'),
         ('calm', 'Calm'),
     ]
-    style_tag = models.CharField(
-        max_length=20,  # 각 스타일 태그는 20자 이내
+
+    style_tags = models.CharField(
+        max_length=20,
         choices=STYLE_TAG_CHOICES,
-        default='no_preference'  # 기본값을 'no_preference'로 설정
+        null=True,         # SQL 스키마 NULL 허용
+        blank=True
     )
+
+    profile_image_url = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name
+
     
 
 # [강사님이 봐주신 코드]
