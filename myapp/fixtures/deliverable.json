@@ -1,0 +1,45 @@
+[
+  {
+    "model": "myapp.deliverable",
+    "pk": 201,
+    "fields": {
+      "campaign_acceptance": 102,
+      "posted_at": "2025-02-10T14:00:00Z",
+      "post_url": "https://instagram.com/p/cat02_laser_review",
+      "deliverable_status": "completed"
+    }
+  },
+
+  {
+    "model": "myapp.deliverable",
+    "pk": 202,
+    "fields": {
+      "campaign_acceptance": 101,
+      "posted_at": null,
+      "post_url": null,
+      "deliverable_status": "incomplete"
+    }
+  },
+
+  {
+    "model": "myapp.deliverable",
+    "pk": 203,
+    "fields": {
+      "campaign_acceptance": 103,
+      "posted_at": "2025-02-12T10:30:00Z",
+      "post_url": "https://instagram.com/p/doglife_snack_review",
+      "deliverable_status": "completed"
+    }
+  },
+
+  {
+    "model": "myapp.deliverable",
+    "pk": 204,
+    "fields": {
+      "campaign_acceptance": 104,
+      "posted_at": null,
+      "post_url": null,
+      "deliverable_status": "incomplete"
+    }
+  }
+]
