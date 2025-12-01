@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Campaign, CampaignAcceptance, Deliverable
-from accounts.serializers import UserSerializer
+from accounts.serializers import BrandSerializer, CreatorSerializer
 
 
 # -----------------------------------------------------------
@@ -8,7 +8,7 @@ from accounts.serializers import UserSerializer
 # -----------------------------------------------------------
 
 class CampaignSerializer(serializers.ModelSerializer):
-    brand = UserSerializer(read_only=True)  # 브랜드 정보 포함
+    brand = BrandSerializer(read_only=True)  # 브랜드 정보 포함
 
     class Meta:
         model = Campaign
@@ -34,7 +34,7 @@ class CampaignSerializer(serializers.ModelSerializer):
 # -----------------------------------------------------------
 
 class CampaignListSerializer(serializers.ModelSerializer):
-    brand = UserSerializer(read_only=True)
+    brand = CreatorSerializer(read_only=True)
 
     class Meta:
         model = Campaign
@@ -53,7 +53,7 @@ class CampaignListSerializer(serializers.ModelSerializer):
 # -----------------------------------------------------------
 
 class CampaignAcceptanceSerializer(serializers.ModelSerializer):
-    creator = UserSerializer(read_only=True)
+    creator = CreatorSerializer(read_only=True)
     campaign = CampaignListSerializer(read_only=True)
 
     class Meta:

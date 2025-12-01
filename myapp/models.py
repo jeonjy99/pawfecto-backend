@@ -59,7 +59,7 @@ class Campaign(models.Model):
     campaign_id = models.AutoField(primary_key=True)
 
     brand = models.ForeignKey(
-        'accounts.Brand',
+        'accounts.User',
         on_delete=models.CASCADE,
         related_name='campaigns'
     )
@@ -124,7 +124,7 @@ class CampaignAcceptance(models.Model):
     campaign_acceptance_id = models.AutoField(primary_key=True)
 
     creator = models.ForeignKey(
-        'accounts.Creator',
+        'accounts.User',
         on_delete=models.CASCADE,
         related_name='campaign_acceptances'
     )
