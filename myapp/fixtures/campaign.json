@@ -177,6 +177,96 @@
       "posting_end_at": "2025-02-27",
       "required_creator_count": 2,
       "style_tags": "no_preference"
+    "pk": 10,
+    "fields": {
+      "brand": 1,
+      "product_name": "고양이 자동 레이저 추적기",
+      "product_image_url": "https://cdn.pawfecto.com/products/laser-cat.png",
+      "product_description": "고양이가 스스로 놀 수 있는 자동 레이저 트래킹 장난감입니다. 3단계 속도 조절 기능이 있어 다양한 고양이가 즐길 수 있습니다.",
+      "target_pet_type": "cat",
+      "min_follower_count": 2000,
+      "requested_at": "2025-01-15T13:00:00Z",
+      "application_deadline_at": "2025-02-01",
+      "posting_start_at": "2025-02-05",
+      "posting_end_at": "2025-02-15",
+      "required_creator_count": 3,
+      "style_tags": "aesthetic"
+    }
+  },
+
+  {
+    "model": "myapp.campaign",
+    "pk": 11,
+    "fields": {
+      "brand": 1,
+      "product_name": "강아지 저자극 영양 스낵 세트",
+      "product_image_url": "https://cdn.pawfecto.com/products/dog-snack-set.jpg",
+      "product_description": "알레르기 걱정 없는 저자극 레시피로 만든 강아지 영양 스낵 세트입니다. 닭고기, 연어, 고구마 베이스의 인기 간식 구성!",
+      "target_pet_type": "dog",
+      "min_follower_count": 3000,
+      "requested_at": "2025-01-20T10:30:00Z",
+      "application_deadline_at": "2025-02-03",
+      "posting_start_at": "2025-02-07",
+      "posting_end_at": "2025-02-20",
+      "required_creator_count": 2,
+      "style_tags": "cozy"
+    }
+  },
+
+  {
+    "model": "myapp.campaign",
+    "pk": 12,
+    "fields": {
+      "brand": 1,
+      "product_name": "프리미엄 반려동물 이발기",
+      "product_image_url": "https://cdn.pawfecto.com/products/pet-clipper.png",
+      "product_description": "저소음 모터를 사용해 스트레스 없이 사용할 수 있는 반려동물 전용 이발기. 초보자도 쉽게 사용 가능한 안전 가이드 포함.",
+      "target_pet_type": null,
+      "min_follower_count": 1000,
+      "requested_at": "2025-01-22T09:10:00Z",
+      "application_deadline_at": "2025-02-05",
+      "posting_start_at": "2025-02-08",
+      "posting_end_at": "2025-02-18",
+      "required_creator_count": 4,
+      "style_tags": "minimal"
+    }
+  },
+
+  {
+    "model": "myapp.campaign",
+    "pk": 13,
+    "fields": {
+      "brand": 1,
+      "product_name": "고양이 수의사 추천 관절 영양제",
+      "product_image_url": "https://cdn.pawfecto.com/products/cat-joint-supplement.jpg",
+      "product_description": "관절 건강을 위해 개발된 고양이용 핵심 영양제. 5년간의 임상 데이터를 기반으로 안전성과 효과가 입증되었습니다.",
+      "target_pet_type": "cat",
+      "min_follower_count": 5000,
+      "requested_at": "2025-01-28T11:00:00Z",
+      "application_deadline_at": "2025-02-10",
+      "posting_start_at": "2025-02-12",
+      "posting_end_at": "2025-02-25",
+      "required_creator_count": 2,
+      "style_tags": "wholesome"
+    }
+  },
+
+  {
+    "model": "myapp.campaign",
+    "pk": 14,
+    "fields": {
+      "brand": 1,
+      "product_name": "강아지 산책용 핸즈프리 리드줄",
+      "product_image_url": "https://cdn.pawfecto.com/products/dog-handsfree-leash.jpg",
+      "product_description": "러너와 반려견을 위한 핸즈프리 리드줄. 허리에 착용하는 방식으로 산책, 러닝, 캠핑에서 자유롭게 움직일 수 있습니다.",
+      "target_pet_type": "dog",
+      "min_follower_count": 4000,
+      "requested_at": "2025-01-30T14:40:00Z",
+      "application_deadline_at": "2025-02-12",
+      "posting_start_at": "2025-02-14",
+      "posting_end_at": "2025-02-28",
+      "required_creator_count": 5,
+      "style_tags": "outdoor"
     }
   }
 ]
