@@ -17,8 +17,8 @@ class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'brand_id',
-            'login_id',
+            'id',
+            'username',             # 로그인 id
             'name',
             'email',
             'phone_number',
@@ -27,12 +27,13 @@ class BrandSerializer(serializers.ModelSerializer):
         ]
 
 
+
 class CreatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'creator_id',
-            'login_id',
+            'id',
+            'username',             # 로그인 id
             'name',
             'email',
             'phone_number',
@@ -45,6 +46,7 @@ class CreatorSerializer(serializers.ModelSerializer):
             'style_tags',
             'profile_image_url',
         ]
+
 
 
 

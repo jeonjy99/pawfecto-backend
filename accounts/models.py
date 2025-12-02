@@ -64,7 +64,7 @@ class User(AbstractUser):
     ]
 
     style_tags = models.CharField(
-        max_length=20,
+        max_length=255,
         choices=STYLE_TAG_CHOICES,
         null=True,         # SQL 스키마 NULL 허용
         blank=True

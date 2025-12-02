@@ -4,11 +4,11 @@ from accounts.serializers import BrandSerializer, CreatorSerializer
 
 
 # -----------------------------------------------------------
-# 1. CampaignSerializer
+# 1. CampaignSerializer (상세 페이지용)
 # -----------------------------------------------------------
 
 class CampaignSerializer(serializers.ModelSerializer):
-    brand = BrandSerializer(read_only=True)  # 브랜드 정보 포함
+    brand = BrandSerializer(read_only=True)  # 브랜드 정보 직렬화
 
     class Meta:
         model = Campaign
@@ -20,7 +20,7 @@ class CampaignSerializer(serializers.ModelSerializer):
             'product_description',
             'target_pet_type',
             'min_follower_count',
-            'style_tags',                # 수정: style_tag → style_tags
+            'style_tags',
             'requested_at',
             'application_deadline_at',
             'posting_start_at',
@@ -30,11 +30,11 @@ class CampaignSerializer(serializers.ModelSerializer):
 
 
 # -----------------------------------------------------------
-# 2. CampaignListSerializer (요약용)
+# 2. CampaignListSerializer (요약 리스트용)
 # -----------------------------------------------------------
 
 class CampaignListSerializer(serializers.ModelSerializer):
-    brand = CreatorSerializer(read_only=True)
+    brand = BrandSerializer(read_only=True)   # ✔ 브랜드이므로 BrandSerializer가 맞음
 
     class Meta:
         model = Campaign
@@ -49,12 +49,12 @@ class CampaignListSerializer(serializers.ModelSerializer):
 
 
 # -----------------------------------------------------------
-# 3. CampaignAcceptanceSerializer
+# 3. CampaignAcceptanceSerializer (신청/수락 정보)
 # -----------------------------------------------------------
 
 class CampaignAcceptanceSerializer(serializers.ModelSerializer):
-    creator = CreatorSerializer(read_only=True)
-    campaign = CampaignListSerializer(read_only=True)
+    creator = CreatorSerializer(read_only=True)   # 신청한 크리에이터 정보
+    campaign = CampaignListSerializer(read_only=True)  # 신청한 캠페인의 요약 정보
 
     class Meta:
         model = CampaignAcceptance
@@ -64,12 +64,12 @@ class CampaignAcceptanceSerializer(serializers.ModelSerializer):
             'campaign',
             'acceptance_status',
             'applied_at',
-            'accepted_at',      # 수정: accpeted_at → accepted_at
+            'accepted_at',   # ✔ 정확한 필드명
         ]
 
 
 # -----------------------------------------------------------
-# 4. DeliverableSerializer
+# 4. DeliverableSerializer (납품 결과물)
 # -----------------------------------------------------------
 
 class DeliverableSerializer(serializers.ModelSerializer):
