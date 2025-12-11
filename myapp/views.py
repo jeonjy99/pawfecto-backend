@@ -1,33 +1,23 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-<<<<<<< HEAD
-
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from .models import Campaign, CampaignAcceptance, Deliverable
 from accounts.models import User
-=======
-from django.utils import timezone
+
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Campaign, CampaignAcceptance
->>>>>>> main
 from .serializers import (
     CampaignSerializer,
     CampaignListSerializer,
     CampaignAcceptanceSerializer,
-<<<<<<< HEAD
     DeliverableSerializer
-)
-=======
 )
 
 from accounts.models import User
 from accounts.serializers import CreatorSerializer
-
->>>>>>> main
 
 # ########################
 # 캠페인 관련
@@ -57,7 +47,6 @@ def create_campaign(request):
         data["brand"] = brand.id
 
         serializer = CampaignSerializer(data=data)
-<<<<<<< HEAD
         if serializer.is_valid():
             serializer.save(brand=brand)
             return Response(serializer.data, status=201)
@@ -86,17 +75,12 @@ def campaign_detail(request, id):
         serializer = CampaignSerializer(campaign, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=200)
-=======
+
         if serializer.is_valid():
             serializer.save(brand=brand)
             return Response(serializer.data, status=201)
->>>>>>> main
 
         return Response(serializer.errors, status=400)
-
-
-<<<<<<< HEAD
 
 # -----------------------------------------------------------
 # 3. 브랜드 캠페인 목록
@@ -218,7 +202,6 @@ def accept_campaign(request, id):
     if acceptance is None:
         return Response({"error": "오퍼 없음"}, status=404)
 
-=======
 # -----------------------------------------------------------
 # 2. 캠페인 상세 조회 (GET /campaigns/<id>/)
 # -----------------------------------------------------------
@@ -443,13 +426,13 @@ def accept_campaign(request, id):
         return Response({"error": "Invitation not found"}, status=status.HTTP_404_NOT_FOUND)
 
     # 상태 업데이트
->>>>>>> main
+
     acceptance.acceptance_status = "accepted"
     acceptance.accepted_at = timezone.now()
     acceptance.save()
 
     serializer = CampaignAcceptanceSerializer(acceptance)
-<<<<<<< HEAD
+
     return Response(serializer.data, status=200)
 
 
@@ -470,7 +453,7 @@ def reject_campaign(request, id):
     if acceptance is None:
         return Response({"error": "오퍼 없음"}, status=404)
 
-=======
+
     return Response({
         "message": "campaign accepted",
         "acceptance": serializer.data
@@ -503,12 +486,12 @@ def reject_campaign(request, id):
         return Response({"error": "Invitation not found"}, status=status.HTTP_404_NOT_FOUND)
 
     # 거절
->>>>>>> main
+
     acceptance.acceptance_status = "rejected"
     acceptance.save()
 
     serializer = CampaignAcceptanceSerializer(acceptance)
-<<<<<<< HEAD
+
     return Response(serializer.data, status=200)
 
 
@@ -620,9 +603,9 @@ def request_changes(request, id):
 #             print(serializer.data)
 #             return Response(serializer.data)
 #         return Response(status=status.HTTP_400_BAD_REQUEST)
-=======
-    return Response({
-        "message": "campaign rejected",
-        "acceptance": serializer.data
-    }, status=status.HTTP_200_OK)
->>>>>>> main
+
+    # return Response({
+    #     "message": "campaign rejected",
+    #     "acceptance": serializer.data
+    # }, status=status.HTTP_200_OK)
+
