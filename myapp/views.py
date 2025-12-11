@@ -1,611 +1,214 @@
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
 from .models import Campaign, CampaignAcceptance, Deliverable
-from accounts.models import User
-
-from rest_framework.permissions import IsAuthenticated
-
 from .serializers import (
     CampaignSerializer,
     CampaignListSerializer,
     CampaignAcceptanceSerializer,
-    DeliverableSerializer
+    DeliverableSerializer,
 )
-
 from accounts.models import User
-from accounts.serializers import CreatorSerializer
 
-# ########################
-# 캠페인 관련
-# ########################
 
-# -----------------------------------------------------------
-# 1. 캠페인 생성 (POST /campaigns/create/)
-# -----------------------------------------------------------
+# ============================================================
+# 브랜드 기능
+# ============================================================
 
-# -----------------------------------------------------------
-# 1. 캠페인 생성 (GET / POST)
-# -----------------------------------------------------------
-@api_view(['GET', 'POST'])
+# ------------------------------------------------------------
+# 1) 브랜드 캠페인 목록 조회
+# ------------------------------------------------------------
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def brand_campaign_list(request, brand_id):
+
+    if request.user.account_type != "brand":
+        return Response({"error": "브랜드만 접근할 수 있습니다."}, status=403)
+
+    if request.user.id != int(brand_id):
+        return Response({"error": "본인 캠페인만 조회 가능합니다."}, status=403)
+
+    campaigns = Campaign.objects.filter(brand=request.user)
+    serializer = CampaignListSerializer(campaigns, many=True)
+    return Response(serializer.data, status=200)
+
+
+
+# ------------------------------------------------------------
+# 2) 캠페인 생성
+# ------------------------------------------------------------
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def create_campaign(request):
-    # GET: 테스트용 응답
-    if request.method == 'GET':
-        return Response({"message": "캠페인 생성 엔드포인트"}, status=200)
 
-    # POST: 캠페인 생성
-    if request.method == 'POST':
-        brand = request.user
+    if request.user.account_type != "brand":
+        return Response({"error": "브랜드만 캠페인을 생성할 수 있습니다."}, status=403)
 
-        if brand.account_type != 'brand':
-            return Response({"error": "브랜드 계정만 가능합니다."}, status=403)
-
-        data = request.data.copy()
-        data["brand"] = brand.id
-
-        serializer = CampaignSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save(brand=brand)
-            return Response(serializer.data, status=201)
-
-        return Response(serializer.errors, status=400)
+    serializer = CampaignSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        serializer.save(brand=request.user)
+        return Response(serializer.data, status=201)
 
 
 
-# -----------------------------------------------------------
-# 2. 캠페인 상세 조회 + 수정 (GET / PUT)
-# -----------------------------------------------------------
-@api_view(['GET', 'PUT'])
-def campaign_detail(request, id):
-    campaign = get_object_or_404(Campaign, pk=id)
-
-    # GET - 상세 조회
-    if request.method == 'GET':
-        serializer = CampaignSerializer(campaign)
-        return Response(serializer.data, status=200)
-
-    # PUT - 수정
-    if request.method == 'PUT':
-        if request.user != campaign.brand:
-            return Response({"error": "수정 권한 없음"}, status=403)
-
-        serializer = CampaignSerializer(campaign, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-
-        if serializer.is_valid():
-            serializer.save(brand=brand)
-            return Response(serializer.data, status=201)
-
-        return Response(serializer.errors, status=400)
-
-# -----------------------------------------------------------
-# 3. 브랜드 캠페인 목록
-# -----------------------------------------------------------
+# ------------------------------------------------------------
+# 3) 캠페인 상세 조회
+# ------------------------------------------------------------
 @api_view(['GET'])
-def brand_campaigns(request, brand_id):
+@permission_classes([IsAuthenticated])
+def campaign_detail(request, campaign_id):
 
-    all_campaigns = Campaign.objects.all()
-    brand_campaign_list = []
-
-    for camp in all_campaigns:
-        if camp.brand_id == brand_id:
-            brand_campaign_list.append(camp)
-
-    serializer = CampaignListSerializer(brand_campaign_list, many=True)
-    return Response(serializer.data, status=200)
-
-
-
-# -----------------------------------------------------------
-# 4. 크리에이터가 받은 오퍼 목록 (pending 상태)
-# -----------------------------------------------------------
-@api_view(['GET'])
-def creator_offers(request, creator_id):
-
-    if request.method == 'GET':
-        offers = CampaignAcceptance.objects.filter(creator_id=creator_id)
-
-        serializer = CampaignAcceptanceSerializer(offers, many=True)
-        return Response(serializer.data, status=200)
-
-
-# -----------------------------------------------------------
-# 5. 크리에이터가 진행중인 캠페인 목록 (accepted 상태)
-# -----------------------------------------------------------
-@api_view(['GET'])
-def creator_progress(request, creator_id):
-
-    all_acc = CampaignAcceptance.objects.all()
-    progressing = []
-
-    for acc in all_acc:
-        if acc.creator_id == creator_id and acc.acceptance_status == 'accepted':
-            progressing.append(acc)
-
-    serializer = CampaignAcceptanceSerializer(progressing, many=True)
-    return Response(serializer.data, status=200)
-
-
-
-# -----------------------------------------------------------
-# 6. 추천 크리에이터 조회
-# -----------------------------------------------------------
-@api_view(['GET'])
-def recommend_creators(request, id):
-
-    campaign = get_object_or_404(Campaign, pk=id)
-    target_type = campaign.target_pet_type
-    min_followers = campaign.min_follower_count
-
-    creators = User.objects.all()
-    recommended = []
-
-    for c in creators:
-        if c.account_type != "creator":
-            continue
-
-        if c.follower_count is None:
-            continue
-
-        # 조건 직접 검사
-        if c.follower_count >= min_followers:
-            if target_type is None or c.pet_type == target_type:
-                recommended.append(c)
-
-    from accounts.serializers import CreatorSerializer
-    serializer = CreatorSerializer(recommended, many=True)
-
-    return Response(serializer.data, status=200)
-
-
-
-# -----------------------------------------------------------
-# 7. 브랜드가 크리에이터에게 초대 (POST)
-# -----------------------------------------------------------
-@api_view(['POST'])
-def invite_creator(request, id):
-
-    campaign = get_object_or_404(Campaign, pk=id)
-    creator_id = request.data.get("creator_id")
-
-    creator = get_object_or_404(User, pk=creator_id)
-
-    acceptance = CampaignAcceptance.objects.create(
-        creator=creator,
-        campaign=campaign,
-        acceptance_status="pending",
-        applied_at=timezone.now()
-    )
-
-    serializer = CampaignAcceptanceSerializer(acceptance)
-    return Response(serializer.data, status=201)
-
-
-
-# -----------------------------------------------------------
-# 8. 크리에이터 캠페인 수락 (POST)
-# -----------------------------------------------------------
-@api_view(['POST'])
-def accept_campaign(request, id):
-
-    acceptance = None
-
-    for acc in CampaignAcceptance.objects.all():
-        if acc.campaign_id == id and acc.creator == request.user:
-            acceptance = acc
-            break
-
-    if acceptance is None:
-        return Response({"error": "오퍼 없음"}, status=404)
-
-# -----------------------------------------------------------
-# 2. 캠페인 상세 조회 (GET /campaigns/<id>/)
-# -----------------------------------------------------------
-
-@api_view(['GET'])
-def campaign_detail(request, id):
-    try:
-        campaign = Campaign.objects.get(campaign_id=id)
-    except Campaign.DoesNotExist:
-        return Response({"error": "Campaign not found"}, status=status.HTTP_404_NOT_FOUND)
-
+    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
     serializer = CampaignSerializer(campaign)
-    return Response(serializer.data)
+    return Response(serializer.data, status=200)
 
 
-# -----------------------------------------------------------
-# 3. 캠페인 수정 (PUT /campaigns/<id>/update/)
-# -----------------------------------------------------------
 
+# ------------------------------------------------------------
+# 4) 캠페인 수정
+# ------------------------------------------------------------
 @api_view(['PUT'])
-def update_campaign(request, id):
-    try:
-        campaign = Campaign.objects.get(campaign_id=id)
-    except Campaign.DoesNotExist:
-        return Response({"error": "Campaign not found"}, status=status.HTTP_404_NOT_FOUND)
+@permission_classes([IsAuthenticated])
+def update_campaign(request, campaign_id):
+
+    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
+
+    if campaign.brand != request.user:
+        return Response({"error": "본인이 생성한 캠페인만 수정할 수 있습니다."}, status=403)
 
     serializer = CampaignSerializer(campaign, data=request.data, partial=True)
-
-    if serializer.is_valid():
+    if serializer.is_valid(raise_exception=True):
         serializer.save()
-        return Response({"message": "campaign updated", "campaign": serializer.data})
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=200)
 
 
-# -----------------------------------------------------------
-# 4. 브랜드 캠페인 삭제 (DELETE /campaigns/<id>/delete/)
-# -----------------------------------------------------------
-@api_view(['DELETE'])
+
+# ------------------------------------------------------------
+# 5) 브랜드 입장에서 특정 캠페인에 대한 크리에이터 신청 현황 조회
+# ------------------------------------------------------------
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def delete_campaign(request, id):
+def campaign_acceptance_list(request, campaign_id):
 
-    # 1) 캠페인 존재 여부 확인
-    try:
-        campaign = Campaign.objects.get(campaign_id=id)
-    except Campaign.DoesNotExist:
-        return Response({"error": "Campaign not found"}, status=status.HTTP_404_NOT_FOUND)
+    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
 
-    # 2) 브랜드 타입인지 확인
-    if request.user.account_type != "brand":
-        return Response({"error": "Only brand accounts can delete campaigns."},
-                        status=status.HTTP_403_FORBIDDEN)
+    if campaign.brand != request.user:
+        return Response({"error": "본인이 생성한 캠페인만 조회할 수 있습니다."}, status=403)
 
-    # 3) 자신의 캠페인인지 확인
-    if campaign.brand_id != request.user.id:
-        return Response({"error": "You do not have permission to delete this campaign."},
-                        status=status.HTTP_403_FORBIDDEN)
-
-    # 4) 삭제
-    campaign.delete()
-
-    return Response({"message": "campaign deleted successfully"}, status=status.HTTP_200_OK)
-
-# -----------------------------------------------------------
-# 5. 브랜드 캠페인 목록 (GET /brands/<brand_id>/campaigns/)
-# -----------------------------------------------------------
-
-@api_view(['GET'])
-def brand_campaigns(request, brand_id):
-    campaigns = Campaign.objects.filter(brand_id=brand_id).order_by('-requested_at')
-    serializer = CampaignListSerializer(campaigns, many=True)
-    return Response(serializer.data)
-
-
-# -----------------------------------------------------------
-# 6. 크리에이터가 받은 오퍼 목록 (GET /creators/<creator_id>/offers/)
-# -----------------------------------------------------------
-
-@api_view(['GET'])
-def creator_offers(request, creator_id):
-    """
-    acceptance_status = 'pending' 또는 'accepted' 만 오퍼로 간주
-    """
-    acceptances = CampaignAcceptance.objects.filter(
-        creator_id=creator_id,
-        acceptance_status__in=['pending', 'accepted']
-    )
-
+    acceptances = CampaignAcceptance.objects.filter(campaign=campaign)
     serializer = CampaignAcceptanceSerializer(acceptances, many=True)
-    return Response(serializer.data)
+    return Response(serializer.data, status=200)
 
 
-# -----------------------------------------------------------
-# 7. 크리에이터 진행중 캠페인 목록 (GET /creators/<creator_id>/progress/)
-# -----------------------------------------------------------
 
+# ------------------------------------------------------------
+# 6) 캠페인 진행 상황(Deliverable) 조회
+# ------------------------------------------------------------
 @api_view(['GET'])
-def creator_progress(request, creator_id):
-    """
-    진행중: acceptance_status = 'accepted'
-    """
-    acceptances = CampaignAcceptance.objects.filter(
-        creator_id=creator_id,
-        acceptance_status='accepted'
+@permission_classes([IsAuthenticated])
+def campaign_progress(request, campaign_id):
+
+    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
+
+    if campaign.brand != request.user:
+        return Response({"error": "본인이 생성한 캠페인만 진행 현황을 조회할 수 있습니다."}, status=403)
+
+    # Deliverable → CampaignAcceptance → Campaign
+    deliverables = Deliverable.objects.filter(
+        campaign_acceptance__campaign=campaign
     )
 
-    serializer = CampaignAcceptanceSerializer(acceptances, many=True)
-    return Response(serializer.data)
+    serializer = DeliverableSerializer(deliverables, many=True)
+    return Response(serializer.data, status=200)
 
 
 
-# ########################
-# 크리에이터 추천 기능
-# ########################
-# -----------------------------------------------------------
-# 캠페인 기반 크리에이터 추천
-# GET /campaigns/<id>/recommendations/
-# -----------------------------------------------------------
+# ============================================================
+# 크리에이터 기능
+# ============================================================
 
+# ------------------------------------------------------------
+# 7) 크리에이터 오퍼 조회 (CampaignAcceptance)
+# ------------------------------------------------------------
 @api_view(['GET'])
-def recommend_creators(request, id):
+@permission_classes([IsAuthenticated])
+def creator_campaign_offers(request, creator_id):
 
-    # 1) 캠페인 가져오기
-    try:
-        campaign = Campaign.objects.get(campaign_id=id)
-    except Campaign.DoesNotExist:
-        return Response({"error": "Campaign not found"}, status=status.HTTP_404_NOT_FOUND)
+    if request.user.account_type != "creator":
+        return Response({"error": "크리에이터만 접근할 수 있습니다."}, status=403)
 
-    # 2) 기본 필터 적용
-    creators = User.objects.filter(
-        account_type="creator",
-        pet_type=campaign.target_pet_type,
-        follower_count__gte=campaign.min_follower_count
-    )
+    if request.user.id != int(creator_id):
+        return Response({"error": "본인 오퍼만 조회할 수 있습니다."}, status=403)
 
-    # 3) 스타일 태그 필터링 (둘 다 no_preference면 스킵)
-    if (
-        campaign.style_tags 
-        and campaign.style_tags != "no_preference"
-    ):
-        creators = creators.filter(style_tags=campaign.style_tags)
-
-    # 4) 추천된 크리에이터 직렬화
-    serializer = CreatorSerializer(creators, many=True)
-
-    return Response({
-        "campaign_id": campaign.campaign_id,
-        "recommended_count": creators.count(),
-        "recommended_creators": serializer.data
-    }, status=status.HTTP_200_OK)
+    offers = CampaignAcceptance.objects.filter(creator=request.user)
+    serializer = CampaignAcceptanceSerializer(offers, many=True)
+    return Response(serializer.data, status=200)
 
 
 
-# ########################
-# 캠페인 신청/수락 API 추가
-# ########################
-# -----------------------------------------------------------
-# 1. 브랜드가 크리에이터에게 초대 (POST /campaigns/<id>/invite/)
-# -----------------------------------------------------------
+# ------------------------------------------------------------
+# 8) 수락
+# ------------------------------------------------------------
 @api_view(['POST'])
-def invite_creator(request, id):
-    creator_id = request.data.get("creator_id")
+@permission_classes([IsAuthenticated])
+def accept_campaign(request, campaign_id):
 
-    # 캠페인 확인
-    try:
-        campaign = Campaign.objects.get(campaign_id=id)
-    except Campaign.DoesNotExist:
-        return Response({"error": "Campaign not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    # 초대할 크리에이터 확인
-    try:
-        creator = User.objects.get(id=creator_id, account_type="creator")
-    except User.DoesNotExist:
-        return Response({"error": "Creator not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    # 기존 신청 내역 존재 여부 확인
-    acceptance, created = CampaignAcceptance.objects.get_or_create(
-        campaign=campaign,
-        creator=creator,
-        defaults={
-            "acceptance_status": "pending",
-            "applied_at": timezone.now(),
-        }
+    acceptance = get_object_or_404(
+        CampaignAcceptance,
+        campaign__campaign_id=campaign_id,
+        creator=request.user
     )
-
-    # 이미 있었다면 상태만 업데이트
-    if not created:
-        acceptance.acceptance_status = "pending"
-        acceptance.applied_at = timezone.now()
-        acceptance.save()
-
-    serializer = CampaignAcceptanceSerializer(acceptance)
-    return Response({
-        "message": "creator invited",
-        "created": created,
-        "acceptance": serializer.data
-    }, status=status.HTTP_200_OK)
-
-
-# -----------------------------------------------------------
-# 2. 크리에이터가 참가 수락 (POST /campaigns/<id>/accept/)
-# -----------------------------------------------------------
-@api_view(['POST'])
-def accept_campaign(request, id):
-    creator_id = request.data.get("creator_id")
-
-    # 캠페인 확인
-    try:
-        campaign = Campaign.objects.get(campaign_id=id)
-    except Campaign.DoesNotExist:
-        return Response({"error": "Campaign not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    # 크리에이터 확인
-    try:
-        creator = User.objects.get(id=creator_id, account_type="creator")
-    except User.DoesNotExist:
-        return Response({"error": "Creator not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    # 신청 기록 확인
-    try:
-        acceptance = CampaignAcceptance.objects.get(campaign=campaign, creator=creator)
-    except CampaignAcceptance.DoesNotExist:
-        return Response({"error": "Invitation not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    # 상태 업데이트
 
     acceptance.acceptance_status = "accepted"
     acceptance.accepted_at = timezone.now()
     acceptance.save()
 
     serializer = CampaignAcceptanceSerializer(acceptance)
-
     return Response(serializer.data, status=200)
 
 
 
-# -----------------------------------------------------------
-# 9. 크리에이터 캠페인 거절 (POST)
-# -----------------------------------------------------------
+# ------------------------------------------------------------
+# 9) 거절
+# ------------------------------------------------------------
 @api_view(['POST'])
-def reject_campaign(request, id):
+@permission_classes([IsAuthenticated])
+def reject_campaign(request, campaign_id):
 
-    acceptance = None
-
-    for acc in CampaignAcceptance.objects.all():
-        if acc.campaign_id == id and acc.creator == request.user:
-            acceptance = acc
-            break
-
-    if acceptance is None:
-        return Response({"error": "오퍼 없음"}, status=404)
-
-
-    return Response({
-        "message": "campaign accepted",
-        "acceptance": serializer.data
-    }, status=status.HTTP_200_OK)
-
-
-# -----------------------------------------------------------
-# 3. 크리에이터가 참가 거절 (POST /campaigns/<id>/reject/)
-# -----------------------------------------------------------
-@api_view(['POST'])
-def reject_campaign(request, id):
-    creator_id = request.data.get("creator_id")
-
-    # 캠페인 확인
-    try:
-        campaign = Campaign.objects.get(campaign_id=id)
-    except Campaign.DoesNotExist:
-        return Response({"error": "Campaign not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    # 크리에이터 확인
-    try:
-        creator = User.objects.get(id=creator_id, account_type="creator")
-    except User.DoesNotExist:
-        return Response({"error": "Creator not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    # 신청 기록 확인
-    try:
-        acceptance = CampaignAcceptance.objects.get(campaign=campaign, creator=creator)
-    except CampaignAcceptance.DoesNotExist:
-        return Response({"error": "Invitation not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    # 거절
+    acceptance = get_object_or_404(
+        CampaignAcceptance,
+        campaign__campaign_id=campaign_id,
+        creator=request.user
+    )
 
     acceptance.acceptance_status = "rejected"
     acceptance.save()
 
     serializer = CampaignAcceptanceSerializer(acceptance)
-
     return Response(serializer.data, status=200)
 
 
 
-# -----------------------------------------------------------
-# 10. 딜리버러블 제출 (POST)
-# -----------------------------------------------------------
-@api_view(['POST'])
-def submit_deliverable(request, id):
+# ------------------------------------------------------------
+# 10) 크리에이터 진행 상황 조회
+# ------------------------------------------------------------
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def creator_progress(request, creator_id):
 
-    acceptance = None
-    for acc in CampaignAcceptance.objects.all():
-        if acc.campaign_id == id and acc.creator == request.user:
-            acceptance = acc
-            break
+    if request.user.account_type != "creator":
+        return Response({"error": "크리에이터만 접근할 수 있습니다."}, status=403)
 
-    if acceptance is None:
-        return Response({"error": "참여한 캠페인 아님"}, status=404)
+    if request.user.id != int(creator_id):
+        return Response({"error": "본인 진행상황만 조회 가능합니다."}, status=403)
 
-    Deliverable.objects.create(
-        campaign_acceptance=acceptance,
-        posted_at=timezone.now(),
-        post_url=request.data.get("post_url"),
-        deliverable_status="incomplete"
+    deliverables = Deliverable.objects.filter(
+        campaign_acceptance__creator=request.user
     )
 
-    return Response({"message": "딜리버러블 제출 완료"}, status=201)
-
-
-
-# -----------------------------------------------------------
-# 11. 딜리버러블 조회 (GET)
-# -----------------------------------------------------------
-@api_view(['GET'])
-def get_deliverables(request, id):
-
-    delv_list = []
-    all_delv = Deliverable.objects.all()
-
-    for d in all_delv:
-        if d.campaign_acceptance.campaign_id == id:
-            delv_list.append(d)
-
-    serializer = DeliverableSerializer(delv_list, many=True)
+    serializer = DeliverableSerializer(deliverables, many=True)
     return Response(serializer.data, status=200)
-
-
-
-# -----------------------------------------------------------
-# 12. 딜리버러블 승인 (POST)
-# -----------------------------------------------------------
-@api_view(['POST'])
-def approve_deliverable(request, id):
-
-    deliverable = get_object_or_404(Deliverable, pk=id)
-    deliverable.deliverable_status = "completed"
-    deliverable.save()
-
-    serializer = DeliverableSerializer(deliverable)
-    return Response(serializer.data, status=200)
-
-
-
-# -----------------------------------------------------------
-# 13. 딜리버러블 수정 요청 (POST)
-# -----------------------------------------------------------
-@api_view(['POST'])
-def request_changes(request, id):
-
-    deliverable = get_object_or_404(Deliverable, pk=id)
-    deliverable.deliverable_status = "incomplete"
-    deliverable.save()
-
-    return Response({"message": "수정 요청 완료"}, status=200)
-
-
-
-# from rest_framework.decorators import api_view
-# from rest_framework.response import Response
-# from rest_framework import status
-# from django.shortcuts import render
-# from .models import Campaign, CampaignAcceptance, Deliverable
-# from .serializers import CampaignListSerializer, CampaignSerializer, CampaignAcceptanceSerializer, DeliverableSerializer
-
-# # Create your views here.
-# # @api_view(['GET'])
-# # def brand_list(request):
-# #     if request.method == 'GET':
-# #         brand = AccountBrand.objects.all()
-# #         serializer = AccountBrandSerializer(brand, many=True)
-# #         return Response(serializer.data)
-
-# # def index(request):
-
-# #     return render(request, 'myapp/index.html')
-
-
-# @api_view(['GET', 'POST'])
-# def campaign_list(request):
-#     if request.method == "GET":
-#         campaigns = Campaign.objects.all()
-#         serializer = CampaignListSerializer(campaigns, many=True)
-#         return Response(serializer.data)
-#     elif request.method == "POST":
-#         print(request.data)
-#         serializer = CampaignSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             print(serializer.data)
-#             return Response(serializer.data)
-#         return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    # return Response({
-    #     "message": "campaign rejected",
-    #     "acceptance": serializer.data
-    # }, status=status.HTTP_200_OK)
-

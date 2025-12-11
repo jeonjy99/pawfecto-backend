@@ -5,6 +5,8 @@ from rest_framework_simplejwt.views import (
 )
 from . import views
 
+app_nmae = 'accounts'
+
 urlpatterns = [
 
     # 회원가입
