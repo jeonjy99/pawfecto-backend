@@ -116,16 +116,8 @@ def logout_view(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def me(request):
-
-    if request.method == 'GET':
-        user = request.user
-
-        if user.account_type == "brand":
-            serializer = BrandSerializer(user)
-        else:
-            serializer = CreatorSerializer(user)
-
-        return Response(serializer.data, status=200)
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data, status=200)
 
 
 
@@ -135,16 +127,11 @@ def me(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def brand_profile(request, brand_id):
-
-    if request.method == 'GET':
-        qs = User.objects.filter(id=brand_id, account_type="brand")
-
-        if not qs.exists():
-            return Response({"error": "Brand not found"}, status=404)
-
-        brand = qs.first()
-        serializer = BrandSerializer(brand)
-        return Response(serializer.data, status=200)
+    qs = User.objects.filter(id=brand_id, account_type="brand")
+    if not qs.exists():
+        return Response({"error": "Brand not found"}, status=404)
+    serializer = UserSerializer(qs.first())
+    return Response(serializer.data, status=200)
 
 
 
@@ -154,16 +141,11 @@ def brand_profile(request, brand_id):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def creator_profile(request, creator_id):
-
-    if request.method == 'GET':
-        qs = User.objects.filter(id=creator_id, account_type="creator")
-
-        if not qs.exists():
-            return Response({"error": "Creator not found"}, status=404)
-
-        creator = qs.first()
-        serializer = CreatorSerializer(creator)
-        return Response(serializer.data, status=200)
+    qs = User.objects.filter(id=creator_id, account_type="creator")
+    if not qs.exists():
+        return Response({"error": "Creator not found"}, status=404)
+    serializer = UserSerializer(qs.first())
+    return Response(serializer.data, status=200)
 
 
 
