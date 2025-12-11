@@ -26,3 +26,26 @@ Content-Type: application/json
   "required_creator_count": 12,
   "campaign_status": "OPEN"
 }
+
+### 크리에이터 캠페인 수락 테스트
+POST http://127.0.0.1:8000/api/v1/campaigns/1/accept/
+Content-Type: application/json
+
+{
+  "creator_id": 1
+}
+### 크리에이터 캠페인 거절
+POST http://127.0.0.1:8000/api/v1/campaigns/1/reject/
+Content-Type: application/json
+
+{
+  "creator_id": 1
+}
+
+
+### 크리에이터 오퍼 조회
+GET http://127.0.0.1:8000/api/v1/creators/1/offers/
+
+
+### 브랜드 캠페인 목록
+GET http://127.0.0.1:8000/api/v1/brands/6/campaigns/
