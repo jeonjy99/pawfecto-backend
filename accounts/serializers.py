@@ -77,10 +77,15 @@
 
 
 from rest_framework import serializers
-from .models import User
+from .models import User, StyleTag
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
+class StyleTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StyleTag
+        fields = ['id', 'code', 'name']
 
 
 # -----------------------------------
@@ -163,6 +168,8 @@ class CreatorSerializer(serializers.ModelSerializer):
         return user
 
 class UserSerializer(serializers.ModelSerializer):
+    style_tags = StyleTagSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
         fields = '__all__'

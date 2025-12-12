@@ -21,6 +21,19 @@ brands = User.objects.filter(acount_type="brand")
 '''
 
 # # Create your models here.
+# -----------------------------------
+# StyleTag 모델
+# -----------------------------------
+class StyleTag(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+# -----------------------------------
+# User 모델 (Brand / Creator 통합)
+# -----------------------------------
 class User(AbstractUser):
     ACCOUNT_TYPES = [
         ('brand', 'Brand (광고주)'),
@@ -49,26 +62,12 @@ class User(AbstractUser):
     total_post_count = models.IntegerField(null=True, blank=True)
     follower_count = models.IntegerField(null=True, blank=True)
     
-    # ENUM('outdoor', 'energetic', ...)
-    STYLE_TAG_CHOICES = [
-        ('outdoor', 'Outdoor'),
-        ('energetic', 'Energetic'),
-        ('no_preference', 'No Preference'),
-        ('minimal', 'Minimal'),
-        ('aesthetic', 'Aesthetic'),
-        ('heartfelt', 'Heartfelt'),
-        ('cozy', 'Cozy'),
-        ('wholesome', 'Wholesome'),
-        ('funny', 'Funny'),
-        ('calm', 'Calm'),
-    ]
-
-    style_tags = models.CharField(
-        max_length=255,
-        choices=STYLE_TAG_CHOICES,
-        null=True,         # SQL 스키마 NULL 허용
-        blank=True
+    style_tags = models.ManyToManyField(
+        StyleTag,
+        blank=True,
+        related_name="users"
     )
+
 
     # 이미지 URL 필드 추가
     profile_image_url = models.CharField(max_length=255, null=True, blank=True)
