@@ -30,11 +30,18 @@ urlpatterns = [
         name='campaign_detail'
     ),
 
-    # 4) 캠페인 수정
+    # 4-1) 캠페인 수정
     path(
         'campaign/<int:campaign_id>/update/',
         views.update_campaign,
         name='update_campaign'
+    ),
+
+    # 4-2) 캠페인 삭제
+    path(
+        'campaign/<int:campaign_id>/delete/',
+        views.delete_campaign,
+        name='delete_campaign'
     ),
 
     # 5) 특정 캠페인의 오퍼(신청) 목록 조회
@@ -84,4 +91,3 @@ urlpatterns = [
         name='creator_progress'
     ),
 ]
-
