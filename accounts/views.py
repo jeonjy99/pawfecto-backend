@@ -159,6 +159,12 @@ def update_style_tags(request, creator_id):
             status=400
         )
 
+    # 아무 태그도 선택하지 않으면 no_preference 자동 적용
+    if not style_tag_ids:
+        from myapp.models import StyleTag
+        no_pref = get_object_or_404(StyleTag, code="no_preference")
+        style_tag_ids = [no_pref.id]
+
     user.style_tags.set(style_tag_ids)
 
     return Response(
@@ -168,22 +174,3 @@ def update_style_tags(request, creator_id):
         },
         status=200
     )
-
-
-# from rest_framework.decorators import api_view
-# from rest_framework.response import Response
-# from rest_framework import status
-# from django.contrib.auth import get_user_model
-
-# # from .models import User
-# from .serializers import UserSerializer
-
-# User = get_user_model()
-# # Create your views here.
-
-# @api_view(['GET'])
-# def user_list(request):
-#     if request.method == "GET":
-#         users = User.objects.all()
-#         serializer = UserSerializer(users, many=True)
-#         return Response(serializer.data)
