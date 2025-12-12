@@ -2,7 +2,16 @@ from django.db import models
 from django.conf import settings
 
 
-from django.db import models
+# -----------------------------------------------------------
+# StyleTag (공통 스타일 태그 모델)
+# -----------------------------------------------------------
+class StyleTag(models.Model):
+    code = models.CharField(max_length=50, unique=True)   # 영문 코드명
+    name = models.CharField(max_length=50)                # 한국어 태그명 또는 표시용 이름
+
+    def __str__(self):
+        return self.name
+
 
 # -----------------------------------------------------------
 # 2. Campaign (캠페인)

@@ -1,98 +1,25 @@
-# from rest_framework import serializers
-# # from .models import User
-# from django.contrib.auth import get_user_model
-
-# User = get_user_model()
-
-
-# '''
-# creators = User.objects.filter(acount_type="creator")
-# brands = User.objects.filter(acount_type="brand")
-
-# serializer = BrandSerializer(brands, many=True)
-
-# '''
-
-# class BrandSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = [
-#             'id',
-#             'username',             # 로그인 id
-#             'name',
-#             'email',
-#             'phone_number',
-#             'pet_type',
-#             'profile_image_url',
-#         ]
-
-
-
-# class CreatorSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = [
-#             'id',
-#             'username',             # 로그인 id
-#             'name',
-#             'email',
-#             'phone_number',
-#             'address',
-#             'pet_type',
-#             'sns_handle',
-#             'sns_url',
-#             'total_post_count',
-#             'follower_count',
-#             'style_tags',
-#             'profile_image_url',
-#         ]
-
-
-
-
-# # -----------------------------------------------------------
-# # 통합 UserSerializer (Brand/Creator 자동 구분)
-# # CampaignSerializer에서 brand=UserSerializer() 사용 가능
-# # CampaignAcceptanceSerializer에서도 creator=UserSerializer() 사용 가능
-# # -----------------------------------------------------------
-
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = '__all__'
-
-# # class UserSerializer(serializers.Serializer):
-# #     """
-# #     Brand 또는 Creator 인스턴스를 자동으로 직렬화하는 통합 직렬화기
-# #     """
-
-# #     def to_representation(self, instance):
-# #         # Brand인지 Creator인지 자동 판단
-# #         if isinstance(instance, Brand):
-# #             return BrandSerializer(instance).data
-# #         elif isinstance(instance, Creator):
-# #             return CreatorSerializer(instance).data
-# #         else:
-# #             return {}
-
-
 from rest_framework import serializers
-from .models import User, StyleTag
+from .models import User
+from myapp.models import StyleTag     # ← StyleTag는 myapp에 위치
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
+# -----------------------------------------------------------
+# StyleTag Serializer (읽기용)
+# -----------------------------------------------------------
 class StyleTagSerializer(serializers.ModelSerializer):
     class Meta:
         model = StyleTag
         fields = ['id', 'code', 'name']
 
 
-# -----------------------------------
-# BRAND 회원가입 Serializer
-# -----------------------------------
-class BrandSerializer(serializers.ModelSerializer):
 
+# -----------------------------------------------------------
+# BRAND 회원가입 Serializer
+# -----------------------------------------------------------
+class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
@@ -127,10 +54,17 @@ class BrandSerializer(serializers.ModelSerializer):
 
 
 
-# -----------------------------------
+# -----------------------------------------------------------
 # CREATOR 회원가입 Serializer
-# -----------------------------------
+# -----------------------------------------------------------
 class CreatorSerializer(serializers.ModelSerializer):
+
+    # style_tags는 ID 배열로 받도록 설정
+    style_tags = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=StyleTag.objects.all(),
+        required=False
+    )
 
     class Meta:
         model = User
@@ -163,10 +97,29 @@ class CreatorSerializer(serializers.ModelSerializer):
 
         return data
 
+
     def create(self, validated_data):
+        # style_tags를 먼저 분리
+        style_tags = validated_data.pop("style_tags", [])
+
+        # creator 생성
         user = User.objects.create_user(**validated_data)
+
+        # 선택된 태그가 없으면 no_preference 적용
+        if not style_tags:
+            no_pref = StyleTag.objects.get(code="no_preference")
+            style_tags = [no_pref]
+
+        # M2M 저장
+        user.style_tags.set(style_tags)
+
         return user
 
+
+
+# -----------------------------------------------------------
+# 기본 UserSerializer (읽기 전용 뷰 등에서 사용)
+# -----------------------------------------------------------
 class UserSerializer(serializers.ModelSerializer):
     style_tags = StyleTagSerializer(many=True, read_only=True)
 

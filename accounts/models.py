@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from myapp.models import StyleTag
 
 # [강사님이 봐주신 코드]
 
@@ -62,12 +62,12 @@ class User(AbstractUser):
     total_post_count = models.IntegerField(null=True, blank=True)
     follower_count = models.IntegerField(null=True, blank=True)
     
+    # 다중 스타일 태그 (ManyToMany)
     style_tags = models.ManyToManyField(
         StyleTag,
         blank=True,
         related_name="users"
     )
-
 
     # 이미지 URL 필드 추가
     profile_image_url = models.CharField(max_length=255, null=True, blank=True)
