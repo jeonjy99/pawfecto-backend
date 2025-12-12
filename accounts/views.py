@@ -1,4 +1,3 @@
-# 주연
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -6,8 +5,8 @@ from rest_framework import status
 
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth import update_session_auth_hash
-
-from .serializers import UserSerializer, BrandSerializer, CreatorSerializer
+from django.shortcuts import get_object_or_404
+from .serializers import UserSerializer, BrandSerializer, CreatorSerializer, StyleTagSerializer
 
 User = get_user_model()
 
@@ -29,33 +28,12 @@ def signup(request):
 
     if serializer.is_valid():
         user = serializer.save()
-        user.set_password(request.data["password"])
-        user.save()
-        return Response({"message": "signup success", "user": UserSerializer(user).data}, status=201)
+        return Response(
+            {"message": "signup success", "user": UserSerializer(user).data},
+            status=201
+        )
 
     return Response(serializer.errors, status=400)
-
-# @api_view(['GET','POST'])
-# def signup(request):
-#     if request.method == 'GET':
-#         return Response({"message": "signup endpoint ready"})
-
-#     if request.method == 'POST':
-#         serializer = UserSerializer(data=request.data)
-
-#         if serializer.is_valid():
-#             user = serializer.save()
-#             user.set_password(request.data["password"])
-#             user.save()
-
-#             return Response(
-#                 {"message": "signup success", "user": UserSerializer(user).data},
-#                 status=status.HTTP_201_CREATED
-#             )
-
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 # ============================================
 # 2) 로그인
@@ -95,8 +73,6 @@ def login_view(request):
             status=status.HTTP_200_OK
         )
 
-
-
 # ============================================
 # 3) 로그아웃
 # ============================================
@@ -109,7 +85,6 @@ def logout_view(request):
         return Response({"message": "logout success"}, status=status.HTTP_200_OK)
 
 
-
 # ============================================
 # 4) 내 정보 조회
 # ============================================
@@ -120,19 +95,15 @@ def me(request):
     return Response(serializer.data, status=200)
 
 
-
 # ============================================
 # 5) 브랜드 프로필 조회
 # ============================================
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def brand_profile(request, brand_id):
-    qs = User.objects.filter(id=brand_id, account_type="brand")
-    if not qs.exists():
-        return Response({"error": "Brand not found"}, status=404)
-    serializer = UserSerializer(qs.first())
+    user = get_object_or_404(User, id=brand_id, account_type="brand")
+    serializer = UserSerializer(user)
     return Response(serializer.data, status=200)
-
 
 
 # ============================================
@@ -148,27 +119,24 @@ def creator_profile(request, creator_id):
     return Response(serializer.data, status=200)
 
 
-
 # ============================================
 # 7) 프로필 수정 (PUT)
 # ============================================
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
+    user = request.user
+    data = request.data.copy()
+    data.pop("account_type", None)  # 계정 타입 변경 방지
 
-    if request.method == 'PUT':
-        user = request.user
-        serializer = UserSerializer(user, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {"message": "profile updated", "user": serializer.data},
-                status=200
-            )
-
-        return Response(serializer.errors, status=400)
-
+    serializer = UserSerializer(user, data=data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {"message": "profile updated", "user": serializer.data},
+            status=200
+        )
+    return Response(serializer.errors, status=400)
 
 
 # ============================================
@@ -178,31 +146,28 @@ def update_profile(request):
 @permission_classes([IsAuthenticated])
 def update_style_tags(request, creator_id):
 
-    if request.method == 'PUT':
-        qs = User.objects.filter(id=creator_id, account_type="creator")
+    if request.user.id != creator_id:
+        return Response({"error": "본인만 수정할 수 있습니다."}, status=403)
 
-        if not qs.exists():
-            return Response({"error": "Creator not found"}, status=404)
+    user = get_object_or_404(User, id=creator_id, account_type="creator")
 
-        user = qs.first()
+    style_tag_ids = request.data.get("style_tags", [])
 
-        style_tag = request.data.get("style_tags")
-
-        allowed_tags = [
-            'outdoor', 'energetic', 'no_preference', 'minimal',
-            'aesthetic', 'heartfelt', 'cozy', 'wholesome', 'funny', 'calm'
-        ]
-
-        if style_tag not in allowed_tags:
-            return Response({"error": "Invalid style tag"}, status=400)
-
-        user.style_tags = style_tag
-        user.save()
-
+    if not isinstance(style_tag_ids, list):
         return Response(
-            {"message": "style tag updated", "style_tags": style_tag},
-            status=200
+            {"error": "style_tags must be a list of IDs"},
+            status=400
         )
+
+    user.style_tags.set(style_tag_ids)
+
+    return Response(
+        {
+            "message": "style tags updated",
+            "style_tags": StyleTagSerializer(user.style_tags.all(), many=True).data
+        },
+        status=200
+    )
 
 
 # from rest_framework.decorators import api_view
