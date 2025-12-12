@@ -2,7 +2,16 @@ from django.db import models
 from django.conf import settings
 
 
-from django.db import models
+# -----------------------------------------------------------
+# StyleTag (공통 스타일 태그 모델)
+# -----------------------------------------------------------
+class StyleTag(models.Model):
+    code = models.CharField(max_length=50, unique=True)   # 영문 코드명
+    name = models.CharField(max_length=50)                # 한국어 태그명 또는 표시용 이름
+
+    def __str__(self):
+        return self.name
+
 
 # -----------------------------------------------------------
 # 2. Campaign (캠페인)
@@ -44,29 +53,16 @@ class Campaign(models.Model):
 
     required_creator_count = models.IntegerField()
 
-    # ENUM('outdoor', 'energetic', ...)
-    STYLE_TAG_CHOICES = [
-        ('outdoor', 'Outdoor'),
-        ('energetic', 'Energetic'),
-        ('no_preference', 'No Preference'),
-        ('minimal', 'Minimal'),
-        ('aesthetic', 'Aesthetic'),
-        ('heartfelt', 'Heartfelt'),
-        ('cozy', 'Cozy'),
-        ('wholesome', 'Wholesome'),
-        ('funny', 'Funny'),
-        ('calm', 'Calm'),
-    ]
-
-    style_tags = models.CharField(
-        max_length=255,
-        choices=STYLE_TAG_CHOICES,
-        null=True,          # SQL에서 NULL 허용
+    # 캠페인 스타일 태그 (StyleTag.code 값 1개 저장)
+    style_tag = models.CharField(
+        max_length=50,
+        null=True,
         blank=True
     )
 
     def __str__(self):
         return self.product_name
+
 
 
 # -----------------------------------------------------------
@@ -144,51 +140,3 @@ class Deliverable(models.Model):
     def __str__(self):
         return f"Deliverable for {self.campaign_acceptance.campaign.product_name}"
 
-
-
-
-
-
-# from django.utils import timezone # <- auto_now_add를 사용하므로 timezone은 불필요합니다.
-
-# -----------------------------------------------------------
-# 1. Account (Brand + Creator 통합)
-# -----------------------------------------------------------
-
-# class Account(models.Model):
-#     """
-#     브랜드와 크리에이터 계정을 통합 관리하는 모델입니다.
-#     """
-#     ACCOUNT_TYPES = [
-#         ('brand', 'Brand (광고주)'),
-#         ('creator', 'Creator (인플루언서)'),
-#     ]
-
-#     # 기본 계정 정보
-#     # account_id = models.AutoField(primary_key=True)
-#     account_type = models.CharField(max_length=10, choices=ACCOUNT_TYPES, null=False)
-    
-#     # 로그인 및 식별 정보 (UNIQUE 및 NOT NULL 제약 조건 반영)
-#     # login_id = models.CharField(max_length=50, unique=True, null=False)
-#     # login_password = models.CharField(max_length=50, null=False) # 실제 운영 시 해시 함수 사용 필수
-#     name = models.CharField(max_length=255, null=False)
-#     email = models.CharField(max_length=100, unique=True, null=False)
-#     phone_number = models.CharField(max_length=20, null=True, blank=True)
-
-#     # Brand 전용 필드
-#     brand_pet_focus = models.CharField(max_length=100, null=True, blank=True)
-
-#     # Creator 전용 필드
-#     address = models.TextField(null=True, blank=True)
-#     pet_type = models.CharField(max_length=100, null=True, blank=True)
-#     sns_handle = models.CharField(max_length=50, null=True, blank=True)
-#     sns_url = models.CharField(max_length=255, null=True, blank=True)
-#     total_post_count = models.IntegerField(null=True, blank=True)
-#     follower_count = models.IntegerField(null=True, blank=True)
-
-#     class Meta:
-#         verbose_name = "계정"
-#         verbose_name_plural = "계정 목록"
-
-#     def __str__(self):
-#         return f"[{self.account_type.upper()}] {self.name} ({self.login_id})"

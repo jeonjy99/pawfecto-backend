@@ -1,0 +1,12 @@
+[
+  { "model": "myapp.styletag", "pk": 1, "fields": { "code": "energetic", "name": "Energetic (활발한)" }},
+  { "model": "myapp.styletag", "pk": 2, "fields": { "code": "calm", "name": "Calm (차분한)" }},
+  { "model": "myapp.styletag", "pk": 3, "fields": { "code": "funny", "name": "Funny (웃긴)" }},
+  { "model": "myapp.styletag", "pk": 4, "fields": { "code": "wholesome", "name": "Wholesome (힐링되는)" }},
+  { "model": "myapp.styletag", "pk": 5, "fields": { "code": "cozy", "name": "Cozy (포근한)" }},
+  { "model": "myapp.styletag", "pk": 6, "fields": { "code": "heartfelt", "name": "Heartfelt (감동적인)" }},
+  { "model": "myapp.styletag", "pk": 7, "fields": { "code": "aesthetic", "name": "Aesthetic (감각적인)" }},
+  { "model": "myapp.styletag", "pk": 8, "fields": { "code": "minimal", "name": "Minimal (깔끔한)" }},
+  { "model": "myapp.styletag", "pk": 9, "fields": { "code": "outdoor", "name": "Outdoor (야외감성)" }},
+  { "model": "myapp.styletag", "pk": 10, "fields": { "code": "no_preference", "name": "No Preference (상관없음)" }}
+]
