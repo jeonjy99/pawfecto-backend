@@ -69,7 +69,7 @@ def campaign_detail(request, campaign_id):
 
 
 # ------------------------------------------------------------
-# 4) 캠페인 수정
+# 4-1) 캠페인 수정
 # ------------------------------------------------------------
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
@@ -85,6 +85,28 @@ def update_campaign(request, campaign_id):
         serializer.save()
         return Response(serializer.data, status=200)
 
+
+# ------------------------------------------------------------
+# 4-2) 캠페인 삭제
+# ------------------------------------------------------------
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_campaign(request, campaign_id):
+
+    # 1. 캠페인 존재 여부 확인
+    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
+
+    # 2. 브랜드 본인 여부 확인
+    if campaign.brand != request.user:
+        return Response(
+            {"error": "본인이 생성한 캠페인만 삭제할 수 있습니다."},
+            status=403
+        )
+
+    # 3. 삭제 실행
+    campaign.delete()
+
+    return Response({"message": "캠페인이 삭제되었습니다."}, status=204)
 
 
 # ------------------------------------------------------------
