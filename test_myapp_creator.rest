@@ -6,11 +6,11 @@ Content-Type: application/json
 
 {
   "username": "puppy_daily",
-  "password": "test1234"
+  "password": ""
 }
 
 ### 로그인 응답에서 token을 복사해 아래 변수에 넣어라
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzY1NDczNzY0LCJpYXQiOjE3NjU0NzM0NjQsImp0aSI6IjdlOGYxNmZjZmUzNTQyNWY5ZWQ1MmVhMjUyZTlkNjg1IiwidXNlcl9pZCI6IjEifQ.zKsShs-pDYGpYMfdXVbwBlrVjhL_FXeYvo9nqiTTHcI
+@token = access
 ############################################
 ### 1. 크리에이터 오퍼 목록 조회  (creator_id = 1)
 ###  → users.json + campaign_acceptance.json에 따르면
