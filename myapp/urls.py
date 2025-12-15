@@ -72,14 +72,14 @@ urlpatterns = [
 
     # 8) 수락
     path(
-        'creator/campaign/<int:campaign_id>/accept/',
+         'creator/<int:creator_id>/campaign/<int:campaign_id>/accept/',
         views.accept_campaign,
         name='accept_campaign'
     ),
 
     # 9) 거절
     path(
-        'creator/campaign/<int:campaign_id>/reject/',
+        'creator/<int:creator_id>/campaign/<int:campaign_id>/reject/',
         views.reject_campaign,
         name='reject_campaign'
     ),
