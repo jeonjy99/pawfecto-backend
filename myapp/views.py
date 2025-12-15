@@ -177,12 +177,18 @@ def creator_campaign_offers(request, creator_id):
 # ------------------------------------------------------------
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def accept_campaign(request, campaign_id):
+def accept_campaign(request, creator_id, campaign_id):
+    if request.user.id != creator_id:
+        return Response(
+            {"error": "본인의 캠페인만 수락할 수 있습니다."},
+            status=403
+        )
 
     acceptance = get_object_or_404(
         CampaignAcceptance,
-        campaign__campaign_id=campaign_id,
-        creator=request.user
+        campaign_id=campaign_id,   
+        creator_id=creator_id,
+        # acceptance_status="pending"
     )
 
     acceptance.acceptance_status = "accepted"
@@ -199,12 +205,18 @@ def accept_campaign(request, campaign_id):
 # ------------------------------------------------------------
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def reject_campaign(request, campaign_id):
+def reject_campaign(request, creator_id, campaign_id):
+    if request.user.id != creator_id:
+        return Response(
+            {"error": "본인의 캠페인만 거절할 수 있습니다."},
+            status=403
+        )
 
     acceptance = get_object_or_404(
         CampaignAcceptance,
-        campaign__campaign_id=campaign_id,
-        creator=request.user
+        campaign_id=campaign_id,
+        creator_id=creator_id,
+        # acceptance_status="pending"
     )
 
     acceptance.acceptance_status = "rejected"
