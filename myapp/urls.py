@@ -11,49 +11,49 @@ urlpatterns = [
 
     # 1) 브랜드 캠페인 목록 조회
     path(
-        'brand/<int:brand_id>/campaigns/',
+        'brand/<int:brand_id>/campaign/',
         views.brand_campaign_list,
         name='brand_campaign_list'
     ),
 
     # 2) 캠페인 생성
     path(
-        'campaign/create/',
+        'brand/<int:brand_id>/campaign/create/',
         views.create_campaign,
         name='create_campaign'
     ),
 
     # 3) 캠페인 상세 조회
     path(
-        'campaign/<int:campaign_id>/',
+        'brand/<int:brand_id>/campaign/<int:campaign_id>/',
         views.campaign_detail,
         name='campaign_detail'
     ),
 
     # 4-1) 캠페인 수정
     path(
-        'campaign/<int:campaign_id>/update/',
+        'brand/<int:brand_id>/campaign/<int:campaign_id>/update/',
         views.update_campaign,
         name='update_campaign'
     ),
 
     # 4-2) 캠페인 삭제
     path(
-        'campaign/<int:campaign_id>/delete/',
+        'brand/<int:brand_id>/campaign/<int:campaign_id>/delete/',
         views.delete_campaign,
         name='delete_campaign'
     ),
 
     # 5) 특정 캠페인의 오퍼(신청) 목록 조회
     path(
-        'campaign/<int:campaign_id>/acceptances/',
+        'brand/<int:brand_id>/campaign/<int:campaign_id>/acceptances/',
         views.campaign_acceptance_list,
         name='campaign_acceptance_list'
     ),
 
     # 6) 캠페인 진행 상황 조회 (Deliverable)
     path(
-        'campaign/<int:campaign_id>/progress/',
+        'brand/<int:brand_id>/campaign/<int:campaign_id>/progress/',
         views.campaign_progress,
         name='campaign_progress'
     ),
