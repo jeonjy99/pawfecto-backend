@@ -43,10 +43,13 @@ def brand_campaign_list(request, brand_id):
 # ------------------------------------------------------------
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def create_campaign(request):
+def create_campaign(request, brand_id):
 
     if request.user.account_type != "brand":
         return Response({"error": "브랜드만 캠페인을 생성할 수 있습니다."}, status=403)
+
+    if request.user.id != brand_id:
+        return Response({"error": "본인 브랜드로만 캠페인을 생성할 수 있습니다."}, status=403)
 
     serializer = CampaignSerializer(data=request.data)
     if serializer.is_valid(raise_exception=True):
@@ -60,9 +63,17 @@ def create_campaign(request):
 # ------------------------------------------------------------
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def campaign_detail(request, campaign_id):
+def campaign_detail(request, brand_id, campaign_id):
 
-    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
+    campaign = get_object_or_404(
+        Campaign,
+        campaign_id=campaign_id,
+        brand_id=brand_id
+    )
+
+    if campaign.brand != request.user:
+        return Response({"error": "본인 캠페인만 조회할 수 있습니다."}, status=403)
+
     serializer = CampaignSerializer(campaign)
     return Response(serializer.data, status=200)
 
@@ -73,17 +84,23 @@ def campaign_detail(request, campaign_id):
 # ------------------------------------------------------------
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def update_campaign(request, campaign_id):
+def update_campaign(request, brand_id, campaign_id):
 
-    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
+    campaign = get_object_or_404(
+        Campaign,
+        campaign_id=campaign_id,
+        brand_id=brand_id
+    )
 
     if campaign.brand != request.user:
         return Response({"error": "본인이 생성한 캠페인만 수정할 수 있습니다."}, status=403)
 
     serializer = CampaignSerializer(campaign, data=request.data, partial=True)
-    if serializer.is_valid(raise_exception=True):
-        serializer.save()
-        return Response(serializer.data, status=200)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+
+    return Response(serializer.data, status=200)
+
 
 
 # ------------------------------------------------------------
@@ -91,10 +108,14 @@ def update_campaign(request, campaign_id):
 # ------------------------------------------------------------
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-def delete_campaign(request, campaign_id):
+def delete_campaign(request, brand_id, campaign_id):
 
     # 1. 캠페인 존재 여부 확인
-    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
+    campaign = get_object_or_404(
+        Campaign,
+        campaign_id=campaign_id,
+        brand_id=brand_id
+    )
 
     # 2. 브랜드 본인 여부 확인
     if campaign.brand != request.user:
@@ -105,7 +126,6 @@ def delete_campaign(request, campaign_id):
 
     # 3. 삭제 실행
     campaign.delete()
-
     return Response({"message": "캠페인이 삭제되었습니다."}, status=204)
 
 
@@ -114,12 +134,16 @@ def delete_campaign(request, campaign_id):
 # ------------------------------------------------------------
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def campaign_acceptance_list(request, campaign_id):
+def campaign_acceptance_list(request, brand_id, campaign_id):
 
-    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
+    campaign = get_object_or_404(
+        Campaign,
+        campaign_id=campaign_id,
+        brand_id=brand_id
+    )
 
     if campaign.brand != request.user:
-        return Response({"error": "본인이 생성한 캠페인만 조회할 수 있습니다."}, status=403)
+        return Response({"error": "본인 캠페인만 조회할 수 있습니다."}, status=403)
 
     acceptances = CampaignAcceptance.objects.filter(campaign=campaign)
     serializer = CampaignAcceptanceSerializer(acceptances, many=True)
@@ -132,14 +156,17 @@ def campaign_acceptance_list(request, campaign_id):
 # ------------------------------------------------------------
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def campaign_progress(request, campaign_id):
+def campaign_progress(request, brand_id, campaign_id):
 
-    campaign = get_object_or_404(Campaign, campaign_id=campaign_id)
+    campaign = get_object_or_404(
+        Campaign,
+        campaign_id=campaign_id,
+        brand_id=brand_id
+    )
 
     if campaign.brand != request.user:
-        return Response({"error": "본인이 생성한 캠페인만 진행 현황을 조회할 수 있습니다."}, status=403)
+        return Response({"error": "본인 캠페인만 진행 현황을 조회할 수 있습니다."}, status=403)
 
-    # Deliverable → CampaignAcceptance → Campaign
     deliverables = Deliverable.objects.filter(
         campaign_acceptance__campaign=campaign
     )
